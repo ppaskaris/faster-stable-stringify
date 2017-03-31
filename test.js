@@ -100,6 +100,37 @@ describe('native parity', () => {
     assertEqualsNative(complexArray);
   });
 
+  it('handles buffer objects', () => {
+    const buffer = Buffer.alloc(8, 0xDEADBEEF);
+    Assert.equal(
+      stableStringify(buffer),
+      '{"data":[239,239,239,239,239,239,239,239],"type":"Buffer"}'
+    );
+  });
+
+  it('handles toJSON that changes', () => {
+    class WeirdToJSON {
+      constructor() {
+        this._toJsonVersion = 0;
+      }
+      get toJSON() {
+        var toJsonVersion = ++this._toJsonVersion;
+        return function weirdToJSON(key) {
+          return `${toJsonVersion}: ${key}`;
+        };
+      }
+    }
+
+    Assert.equal(
+      stableStringify(new WeirdToJSON()),
+      JSON.stringify(new WeirdToJSON())
+    );
+  });
+
+  it('"handles" functions', () => {
+    assertEqualsNative(function ಠ_ಠ() {});
+  });
+
 });
 
 describe('determinism', () => {
@@ -164,11 +195,16 @@ describe('edge cases', () => {
     obj.value = obj;
     obj.array = [1, obj, 3];
     obj.object = { b: 1, c: obj, a: 3 };
+    obj.coverage = [];
+    obj.coverage.push(1, obj.coverage, 3);
     Assert.equal(
       stableStringify(obj),
-      '{"array":[1,"[Circular]",3],' +
+      '{' +
+      '"array":[1,"[Circular]",3],' +
+      '"coverage":[1,"[Circular]",3],' +
       '"object":{"a":3,"b":1,"c":"[Circular]"},' +
-      '"value":"[Circular]"}'
+      '"value":"[Circular]"' +
+      '}'
     );
   });
 

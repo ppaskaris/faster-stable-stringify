@@ -1,0 +1,17 @@
+{
+  "name": "faster-stable-stringify-bench",
+  "version": "1.0.0",
+  "description": "Benchmark for faster-stable-stringify.",
+  "main": "index.js",
+  "scripts": {
+    "test": "../node_modules/.bin/mocha index.js"
+  },
+  "author": "Patrick Paskaris <patrick@paskaris.gr>",
+  "license": "GPL-3.0",
+  "private": true,
+  "devDependencies": {
+    "benchmark": "^2.1.4",
+    "fast-stable-stringify": "^0.1.1",
+    "json-stable-stringify": "^1.0.1"
+  }
+}
